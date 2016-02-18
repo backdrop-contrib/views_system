@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Extends the Views module and provides additional fields, filter criteria, and
+ * sort criteria for Modules/Themes/Theme engines.
+ */
+
+
+/**
+ * Implements hook_views_api().
+ */
+function views_system_views_api() {
+
+  return array(
+    'api' => '3.0',
+    'path' => backdrop_get_path('module', 'views_system') . '/views',
+  );
+}
