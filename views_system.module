@@ -17,3 +17,15 @@ function views_system_views_api() {
     'path' => backdrop_get_path('module', 'views_system') . '/views',
   );
 }
+
+
+/**
+ * Implements hook_autoload_info().
+ */
+function views_system_autoload_info() {
+
+  return array(
+    'views_handler_filter_system_backdrop_core' => 'views/views_handler_filter_system_backdrop_core.inc',
+    'views_handler_filter_system_info_hidden' => 'views/views_handler_filter_system_info_hidden.inc',
+  );
+}

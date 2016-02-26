@@ -79,4 +79,26 @@ function views_system_views_data_alter(&$data) {
       'handler' => 'views_handler_filter_string',
     ),
   );
+  // Additional filter: Info hidden
+  $data['system']['info_hidden'] = array(
+    'real field' => 'info',
+    'title' => t('Hidden'),
+    'help' => t('Boolean indicating whether this module or theme is hidden.'),
+    'filter' => array(
+      'handler' => 'views_handler_filter_system_info_hidden',
+      'label' => t('Is hidden'),
+      'type' => 'yes-no',
+    ),
+  );
+  // Additional filter: Backdrop core
+  $data['system']['backdrop_core'] = array(
+    'real field' => 'filename',
+    'title' => t('Backdrop core'),
+    'help' => t('Boolean indicating whether this module or theme is part of Backdrop core.'),
+    'filter' => array(
+      'handler' => 'views_handler_filter_system_backdrop_core',
+      'label' => t('Is part of Backdrop core'),
+      'type' => 'yes-no',
+    ),
+  );
 }
