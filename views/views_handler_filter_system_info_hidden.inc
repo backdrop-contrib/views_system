@@ -19,6 +19,6 @@ class views_handler_filter_system_info_hidden extends views_handler_filter_boole
     $field = "$this->table_alias.$this->real_field ";
     $operator = empty($this->value) ? 'NOT LIKE' : 'LIKE';
 
-    $this->query->add_where($this->options['group'], $field, '%' . db_like('s:6:"hidden";b:1') . '%', $operator);
+    $this->query->add_where($this->options['group'], $field, '%' . db_like('s:6:"hidden";b:1;') . '%', $operator);
   }
 }
