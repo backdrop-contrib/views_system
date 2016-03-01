@@ -25,7 +25,24 @@ function views_system_views_api() {
 function views_system_autoload_info() {
 
   return array(
-    'views_handler_filter_system_backdrop_core' => 'views/views_handler_filter_system_backdrop_core.inc',
+    'views_handler_field_system_info_description' => 'views/views_handler_field_system_info_description.inc',
+    'views_handler_field_system_info_hidden' => 'views/views_handler_field_system_info_hidden.inc',
     'views_handler_filter_system_info_hidden' => 'views/views_handler_filter_system_info_hidden.inc',
+    'views_handler_sort_system_info_hidden' => 'views/views_handler_sort_system_info_hidden.inc',
+    'views_handler_field_system_info_mtime' => 'views/views_handler_field_system_info_mtime.inc',
+    'views_handler_sort_system_info_mtime' => 'views/views_handler_sort_system_info_mtime.inc',
+    'views_handler_field_system_info_name' => 'views/views_handler_field_system_info_name.inc',
+    'views_handler_sort_system_info_name' => 'views/views_handler_sort_system_info_name.inc',
+    'views_handler_field_system_info_package' => 'views/views_handler_field_system_info_package.inc',
+    'views_handler_sort_system_info_package' => 'views/views_handler_sort_system_info_package.inc',
+    'views_handler_field_system_info_php' => 'views/views_handler_field_system_info_php.inc',
+    'views_handler_field_system_info_project' => 'views/views_handler_field_system_info_project.inc',
+    'views_handler_sort_system_info_project' => 'views/views_handler_sort_system_info_project.inc',
+    'views_handler_field_system_info_timestamp' => 'views/views_handler_field_system_info_timestamp.inc',
+    'views_handler_sort_system_info_timestamp' => 'views/views_handler_sort_system_info_timestamp.inc',
+    'views_handler_field_system_info_version' => 'views/views_handler_field_system_info_version.inc',
+    'views_handler_field_system_backdrop_core' => 'views/views_handler_field_system_backdrop_core.inc',
+    'views_handler_filter_system_backdrop_core' => 'views/views_handler_filter_system_backdrop_core.inc',
+    'views_handler_sort_system_backdrop_core' => 'views/views_handler_sort_system_backdrop_core.inc',
   );
 }

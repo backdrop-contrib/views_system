@@ -7,7 +7,7 @@
 
 
 /**
- * Checks if a module or theme is part of Backdrop core or not.
+ * Checks if the module or theme is part of Backdrop core.
  */
 class views_handler_filter_system_backdrop_core extends views_handler_filter_boolean_operator {
 
