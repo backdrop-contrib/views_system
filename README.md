@@ -2,8 +2,8 @@
 Views System
 ============
 
-Extends the Views module and provides additional fields, filter criteria, and
-sort criteria for Modules/Themes/Theme engines.
+Extends the Views module and provides fields, filter criteria, and sort criteria
+for Modules/Themes/Theme engines.
 
 Installation
 ------------
@@ -20,7 +20,7 @@ complete text.
 Current Maintainers
 -------------------
 
-- Ralf Stamm (https://github.com/rstamm/)
+- Ralf Stamm (https://github.com/rstamm)
 
 Credits
 -------

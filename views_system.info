@@ -1,6 +1,9 @@
+
 name = Views System
-description = Extends the Views module and provides additional fields, filter criteria, and sort criteria for Modules/Themes/Theme engines.
+description = Extends the Views module and provides fields, filter criteria, and sort criteria for Modules/Themes/Theme engines.
+
 backdrop = 1.x
 package = Views
 type = module
+
 dependencies[] = views

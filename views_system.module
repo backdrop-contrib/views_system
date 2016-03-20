@@ -2,8 +2,8 @@
 
 /**
  * @file
- * Extends the Views module and provides additional fields, filter criteria, and
- * sort criteria for Modules/Themes/Theme engines.
+ * Extends the Views module and provides fields, filter criteria, and sort
+ * criteria for Modules/Themes/Theme engines.
  */
 
 
@@ -25,24 +25,227 @@ function views_system_views_api() {
 function views_system_autoload_info() {
 
   return array(
-    'views_handler_field_system_info_description' => 'views/views_handler_field_system_info_description.inc',
-    'views_handler_field_system_info_hidden' => 'views/views_handler_field_system_info_hidden.inc',
-    'views_handler_filter_system_info_hidden' => 'views/views_handler_filter_system_info_hidden.inc',
-    'views_handler_sort_system_info_hidden' => 'views/views_handler_sort_system_info_hidden.inc',
-    'views_handler_field_system_info_mtime' => 'views/views_handler_field_system_info_mtime.inc',
-    'views_handler_sort_system_info_mtime' => 'views/views_handler_sort_system_info_mtime.inc',
-    'views_handler_field_system_info_name' => 'views/views_handler_field_system_info_name.inc',
-    'views_handler_sort_system_info_name' => 'views/views_handler_sort_system_info_name.inc',
-    'views_handler_field_system_info_package' => 'views/views_handler_field_system_info_package.inc',
-    'views_handler_sort_system_info_package' => 'views/views_handler_sort_system_info_package.inc',
-    'views_handler_field_system_info_php' => 'views/views_handler_field_system_info_php.inc',
-    'views_handler_field_system_info_project' => 'views/views_handler_field_system_info_project.inc',
-    'views_handler_sort_system_info_project' => 'views/views_handler_sort_system_info_project.inc',
-    'views_handler_field_system_info_timestamp' => 'views/views_handler_field_system_info_timestamp.inc',
-    'views_handler_sort_system_info_timestamp' => 'views/views_handler_sort_system_info_timestamp.inc',
-    'views_handler_field_system_info_version' => 'views/views_handler_field_system_info_version.inc',
-    'views_handler_field_system_backdrop_core' => 'views/views_handler_field_system_backdrop_core.inc',
-    'views_handler_filter_system_backdrop_core' => 'views/views_handler_filter_system_backdrop_core.inc',
-    'views_handler_sort_system_backdrop_core' => 'views/views_handler_sort_system_backdrop_core.inc',
+    'views_handler_field_views_system_dependencies' => 'views/views_handler_field_views_system_dependencies.inc',
+    'views_handler_field_views_system_features' => 'views/views_handler_field_views_system_features.inc',
+    'views_handler_field_views_system_regions' => 'views/views_handler_field_views_system_regions.inc',
+    'views_handler_field_views_system_regions_hidden' => 'views/views_handler_field_views_system_regions_hidden.inc',
+    'views_handler_field_views_system_required_by' => 'views/views_handler_field_views_system_required_by.inc',
+    'views_handler_field_views_system_requires' => 'views/views_handler_field_views_system_requires.inc',
+    'views_handler_field_views_system_screenshot' => 'views/views_handler_field_views_system_screenshot.inc',
+    'views_handler_field_views_system_scripts' => 'views/views_handler_field_views_system_scripts.inc',
+    'views_handler_field_views_system_settings' => 'views/views_handler_field_views_system_settings.inc',
+    'views_handler_field_views_system_stylesheets' => 'views/views_handler_field_views_system_stylesheets.inc',
   );
+}
+
+
+/**
+ * Implements hook_flush_caches().
+ */
+function views_system_flush_caches() {
+
+  views_system_rebuild_module_data();
+  views_system_rebuild_theme_data();
+}
+
+
+/**
+ * Implements hook_modules_enabled().
+ */
+function views_system_modules_enabled() {
+
+  views_system_rebuild_module_data();
+  views_system_rebuild_theme_data();
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function views_system_form_system_modules_alter(&$form, &$form_state, $form_id) {
+
+  views_system_rebuild_module_data();
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function views_system_form_system_themes_admin_form_alter(&$form, &$form_state, $form_id) {
+
+  views_system_rebuild_theme_data();
+}
+
+
+/**
+ * Helper function to rebuild module's data.
+ */
+function views_system_rebuild_module_data() {
+
+  db_query("DELETE FROM {views_system} WHERE type = 'module' OR type = 'profile'");
+
+  $profile = backdrop_get_profile();
+
+  $modules = system_rebuild_module_data();
+  foreach($modules as $n => $module) {
+
+    $core = preg_match('/^(core\/modules\/|profiles\/minimal\/minimal|profiles\/standard\/standard|profiles\/testing\/testing)/i', $module->filename);
+    if ($core) {
+      $module->info['project'] = 'backdrop';
+      $module->info['timestamp'] = 0;
+    }
+
+    if ($module->name == $profile) {
+      $module->type = 'profile';
+    }
+
+    $data = array();
+    $data['filename'] = $module->filename;
+    $data['configure'] = !empty($module->info['configure']) ? $module->info['configure'] : '';
+    $data['core'] = !empty($module->info['backdrop']) ? $module->info['backdrop'] : '';
+    $data['datestamp'] = !empty($module->info['timestamp']) ? (int) $module->info['timestamp'] : NULL;
+    $data['dependencies'] = !empty($module->info['dependencies']) ? serialize($module->info['dependencies']) : '';
+    $data['description'] = !empty($module->info['description']) ? $module->info['description'] : '';
+    $data['label'] = $module->info['name'];
+    $data['mtime'] = (int) $module->info['mtime'];
+    $data['origin'] = $core ? 'core' : 'extension';
+    $data['package'] = !empty($module->info['package']) ? $module->info['package'] : '';
+    $data['php'] = !empty($module->info['php']) ? $module->info['php'] : '';
+    $data['project'] = !empty($module->info['project']) ? $module->info['project'] : '';
+    $data['project_status_url'] = !empty($module->info['project_status_url']) ? $module->info['project_status_url'] : '';
+    $data['required'] = !empty($module->info['required']) ? (int) $module->info['required'] : 0;
+    $data['required_by'] = !empty($module->required_by) ? serialize($module->required_by) : '';
+    $data['requires'] = !empty($module->requires) ? serialize($module->requires) : '';
+    $data['scripts'] = !empty($module->info['scripts']) ? serialize($module->info['scripts']) : '';
+    $data['stylesheets'] = !empty($module->info['stylesheets']) ? serialize($module->info['stylesheets']) : '';
+    $data['type'] = $module->type;
+    $data['version'] = !empty($module->info['version']) ? $module->info['version'] : '';
+    $data['visible'] = !empty($module->info['hidden']) ? (int) !$module->info['hidden'] : 1;
+
+    db_insert('views_system')
+      ->fields($data)
+      ->execute();
+  }
+}
+
+
+/**
+ * Helper function to rebuild theme's data.
+ */
+function views_system_rebuild_theme_data() {
+
+  db_query("DELETE FROM {views_system} WHERE type = 'theme' OR type = 'theme_engine'");
+
+  $default_theme = config_get('system.core', 'theme_default');
+  $admin_theme = config_get('system.core', 'admin_theme');
+
+  $themes = system_rebuild_theme_data();
+  foreach ($themes as $theme_name => $theme) {
+
+    $core = preg_match('/^core\/themes\//i', $theme->filename);
+    if ($core) {
+      $theme->info['project'] = 'backdrop';
+      $theme->info['timestamp'] = 0;
+    }
+
+    $theme->is_default = ($theme_name == $default_theme);
+    $theme->is_admin = ($theme_name == $admin_theme || ($theme->is_default && $admin_theme == '0'));
+
+    $theme->requires = array();
+    if (isset($theme->base_themes)) {
+      foreach ($theme->base_themes as $base_theme => $base_theme_label) {
+        $theme->requires[$base_theme] = array('name' => $base_theme);
+      }
+    }
+    $theme->required_by = array();
+    if (isset($theme->sub_themes)) {
+      foreach ($theme->sub_themes as $sub_theme => $sub_theme_label) {
+        $theme->required_by[$sub_theme] = array('name' => $theme_name);
+      }
+    }
+
+    $data = array();
+    $data['filename'] = $theme->filename;
+    $data['admin_theme'] = (int) $theme->is_admin;
+    $data['base_theme'] = !empty($theme->info['base theme']) ? $theme->info['base theme'] : '';
+    $data['core'] = !empty($theme->info['backdrop']) ? $theme->info['backdrop'] : '';
+    $data['datestamp'] = !empty($theme->info['timestamp']) ? (int) $theme->info['timestamp'] : NULL;
+    $data['default_theme'] = (int) $theme->is_default;
+    $data['description'] = !empty($theme->info['description']) ? $theme->info['description'] : '';
+    $data['engine'] = !empty($theme->info['engine']) ? $theme->info['engine'] : '';
+    $data['features'] = !empty($theme->info['features']) ? serialize($theme->info['features']) : '';
+    $data['label'] = $theme->info['name'];
+    $data['mtime'] = (int) $theme->info['mtime'];
+    $data['origin'] = $core ? 'core' : 'extension';
+    $data['php'] = !empty($theme->info['php']) ? $theme->info['php'] : '';
+    $data['project'] = !empty($theme->info['project']) ? $theme->info['project'] : '';
+    $data['project_status_url'] = !empty($theme->info['project_status_url']) ? $theme->info['project_status_url'] : '';
+    $data['regions'] = !empty($theme->info['regions']) ? serialize($theme->info['regions']) : '';
+    $data['regions_hidden'] = !empty($theme->info['regions_hidden']) ? serialize($theme->info['regions_hidden']) : '';
+    $data['required'] = !empty($theme->info['required']) ? (int) $theme->info['required'] : 0;
+    $data['required_by'] = !empty($theme->required_by) ? serialize($theme->required_by) : '';
+    $data['requires'] = !empty($theme->requires) ? serialize($theme->requires) : '';
+    $data['screenshot'] = !empty($theme->info['screenshot']) && file_exists($theme->info['screenshot']) ? $theme->info['screenshot'] : '';
+    $data['scripts'] = !empty($theme->info['scripts']) ? serialize($theme->info['scripts']) : '';
+    $data['settings'] = !empty($theme->info['settings']) ? serialize($theme->info['settings']) : '';
+    $data['stylesheets'] = !empty($theme->info['stylesheets']) ? serialize($theme->info['stylesheets']) : '';
+    $data['type'] = $theme->type;
+    $data['version'] = !empty($theme->info['version']) ? $theme->info['version'] : '';
+    $data['visible'] = !empty($theme->info['hidden']) ? (int) !$theme->info['hidden'] : 1;
+
+    db_insert('views_system')
+      ->fields($data)
+      ->execute();
+  }
+}
+
+
+/**
+ * Helper function to retrieve list of origins.
+ */
+function views_system_get_origin_list() {
+
+  return array(
+    'core' => t('Core'),
+    'extension' => t('Extension'),
+  );
+}
+
+
+/**
+ * Helper function to retrieve list of types.
+ */
+function views_system_get_type_list() {
+
+  return array(
+    'module' => t('Module'),
+    'profile' => t('Profile'),
+    'theme' => t('Theme'),
+    'theme_engine' => t('Theme engine'),
+  );
+}
+
+
+/**
+ *
+ */
+function views_system_convert_nested_array_into_flat_array($nested, $delimiter = '.', $path = null) {
+  $flat = array();
+
+  if (!is_null($path)) {
+    $path .= $delimiter;
+  }
+
+  if (is_array($nested)) {
+    foreach ($nested as $key => &$value) {
+      if (is_array($value)) {
+        $flat = array_merge($flat, views_system_convert_nested_array_into_flat_array($value, $delimiter, $path . $key));
+      }
+      else {
+        $flat[$path . $key] = $value;
+      }
+    }
+  }
+
+  return $flat;
 }
