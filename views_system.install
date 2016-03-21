@@ -217,3 +217,16 @@ function views_system_enable() {
   views_system_rebuild_module_data();
   views_system_rebuild_theme_data();
 }
+
+
+/**
+ * Install database table 'views_system' and add data.
+ */
+function views_system_update_1100() {
+
+  $modules = array('views_system');
+
+  module_disable($modules, FALSE);
+  backdrop_uninstall_modules($modules, FALSE);
+  module_enable($modules, FALSE);
+}
