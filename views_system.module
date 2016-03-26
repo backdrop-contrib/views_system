@@ -8,18 +8,6 @@
 
 
 /**
- * Implements hook_views_api().
- */
-function views_system_views_api() {
-
-  return array(
-    'api' => '3.0',
-    'path' => backdrop_get_path('module', 'views_system') . '/views',
-  );
-}
-
-
-/**
  * Implements hook_autoload_info().
  */
 function views_system_autoload_info() {
@@ -35,6 +23,18 @@ function views_system_autoload_info() {
     'views_handler_field_views_system_scripts' => 'views/views_handler_field_views_system_scripts.inc',
     'views_handler_field_views_system_settings' => 'views/views_handler_field_views_system_settings.inc',
     'views_handler_field_views_system_stylesheets' => 'views/views_handler_field_views_system_stylesheets.inc',
+  );
+}
+
+
+/**
+ * Implements hook_views_api().
+ */
+function views_system_views_api() {
+
+  return array(
+    'api' => '3.0',
+    'path' => backdrop_get_path('module', 'views_system') . '/views',
   );
 }
 
@@ -87,13 +87,9 @@ function views_system_rebuild_module_data() {
   $profile = backdrop_get_profile();
 
   $modules = system_rebuild_module_data();
-  foreach($modules as $n => $module) {
+  foreach($modules as $module) {
 
     $core = preg_match('/^(core\/modules\/|profiles\/minimal\/minimal|profiles\/standard\/standard|profiles\/testing\/testing)/i', $module->filename);
-    if ($core) {
-      $module->info['project'] = 'backdrop';
-      $module->info['timestamp'] = 0;
-    }
 
     if ($module->name == $profile) {
       $module->type = 'profile';
@@ -143,10 +139,6 @@ function views_system_rebuild_theme_data() {
   foreach ($themes as $theme_name => $theme) {
 
     $core = preg_match('/^core\/themes\//i', $theme->filename);
-    if ($core) {
-      $theme->info['project'] = 'backdrop';
-      $theme->info['timestamp'] = 0;
-    }
 
     $theme->is_default = ($theme_name == $default_theme);
     $theme->is_admin = ($theme_name == $admin_theme || ($theme->is_default && $admin_theme == '0'));
