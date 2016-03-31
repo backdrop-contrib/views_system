@@ -219,6 +219,16 @@ function views_system_get_type_list() {
 
 
 /**
+ * Helper function to retrieve list of base themes.
+ */
+function views_system_get_base_theme_list() {
+
+  return db_query("SELECT s.name, vs.label FROM {views_system} vs LEFT JOIN {system} s ON s.filename = vs.filename WHERE s.name IN (SELECT DISTINCT(base_theme) FROM {views_system} WHERE base_theme <> '') ORDER BY vs.label")
+    ->fetchAllKeyed();
+}
+
+
+/**
  *
  */
 function views_system_convert_nested_array_into_flat_array($nested, $delimiter = '.', $path = null) {

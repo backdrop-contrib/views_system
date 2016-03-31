@@ -44,11 +44,13 @@ function views_system_views_data() {
     'title' => t('Base theme'),
     'help' => t('The base theme of this theme.'),
     'field' => array(
-      'handler' => 'views_handler_field',
+      'handler' => 'views_handler_field_machine_name',
+      'options callback' => 'views_system_get_base_theme_list',
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_string',
+      'handler' => 'views_handler_filter_in_operator',
+      'options callback' => 'views_system_get_base_theme_list',
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_string',
