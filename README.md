@@ -8,8 +8,14 @@ for Modules/Themes/Theme engines.
 Installation
 ------------
 
-- Install this module using the official Backdrop CMS instructions at
-  https://backdropcms.org/guide/modules
+Install this module using the official Backdrop CMS instructions at
+https://backdropcms.org/guide/modules
+
+Usage
+-----
+
+For more information and how-to's, see the online handbook entry at
+https://github.com/backdrop-contrib/views_system/wiki
 
 License
 -------
