@@ -14,13 +14,6 @@ function views_system_schema() {
   $schema['views_system'] = array(
     'description' => "Information from the module's and theme's .info file.",
     'fields' => array(
-      'filename' => array(
-        'description' => 'The path of the primary file for this item, relative to the Backdrop root; e.g. modules/node/node.module.',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ),
       'admin_theme' => array(
         'description' => 'Boolean indicating whether or not this theme is the administration theme.',
         'type' => 'int',
@@ -82,6 +75,13 @@ function views_system_schema() {
         'type' => 'blob',
         'not null' => FALSE,
       ),
+      'filename' => array(
+        'description' => 'The filename of the primary file for this item; e.g. node.module.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
       'label' => array(
         'description' => 'The human readable name of this item.',
         'type' => 'varchar',
@@ -104,6 +104,13 @@ function views_system_schema() {
       ),
       'package' => array(
         'description' => 'The name of the package this module belongs to.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'pathname' => array(
+        'description' => 'The path of the primary file for this item, relative to the Backdrop root; e.g. modules/node/node.module.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -199,7 +206,7 @@ function views_system_schema() {
         'default' => 1,
       ),
     ),
-    'primary key' => array('filename'),
+    'primary key' => array('pathname'),
     'indexes' => array(
       'origin_type_visible' => array('origin', 'type', 'visible'),
     ),
@@ -223,6 +230,19 @@ function views_system_enable() {
  * Install database table 'views_system' and add data.
  */
 function views_system_update_1100() {
+
+  $modules = array('views_system');
+
+  module_disable($modules, FALSE);
+  backdrop_uninstall_modules($modules, FALSE);
+  module_enable($modules, FALSE);
+}
+
+
+/**
+ * Add column 'pathname' to database table 'views_system' and update data.
+ */
+function views_system_update_1101() {
 
   $modules = array('views_system');
 

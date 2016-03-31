@@ -96,16 +96,17 @@ function views_system_rebuild_module_data() {
     }
 
     $data = array();
-    $data['filename'] = $module->filename;
     $data['configure'] = !empty($module->info['configure']) ? $module->info['configure'] : '';
     $data['core'] = !empty($module->info['backdrop']) ? $module->info['backdrop'] : '';
     $data['datestamp'] = !empty($module->info['timestamp']) ? (int) $module->info['timestamp'] : NULL;
     $data['dependencies'] = !empty($module->info['dependencies']) ? serialize($module->info['dependencies']) : '';
     $data['description'] = !empty($module->info['description']) ? $module->info['description'] : '';
+    $data['filename'] = basename($module->filename);
     $data['label'] = $module->info['name'];
     $data['mtime'] = (int) $module->info['mtime'];
     $data['origin'] = $core ? 'core' : 'extension';
     $data['package'] = !empty($module->info['package']) ? $module->info['package'] : '';
+    $data['pathname'] = $module->filename;
     $data['php'] = !empty($module->info['php']) ? $module->info['php'] : '';
     $data['project'] = !empty($module->info['project']) ? $module->info['project'] : '';
     $data['project_status_url'] = !empty($module->info['project_status_url']) ? $module->info['project_status_url'] : '';
@@ -157,7 +158,6 @@ function views_system_rebuild_theme_data() {
     }
 
     $data = array();
-    $data['filename'] = $theme->filename;
     $data['admin_theme'] = (int) $theme->is_admin;
     $data['base_theme'] = !empty($theme->info['base theme']) ? $theme->info['base theme'] : '';
     $data['core'] = !empty($theme->info['backdrop']) ? $theme->info['backdrop'] : '';
@@ -166,9 +166,11 @@ function views_system_rebuild_theme_data() {
     $data['description'] = !empty($theme->info['description']) ? $theme->info['description'] : '';
     $data['engine'] = !empty($theme->info['engine']) ? $theme->info['engine'] : '';
     $data['features'] = !empty($theme->info['features']) ? serialize($theme->info['features']) : '';
+    $data['filename'] = basename($theme->filename);
     $data['label'] = $theme->info['name'];
     $data['mtime'] = (int) $theme->info['mtime'];
     $data['origin'] = $core ? 'core' : 'extension';
+    $data['pathname'] = $theme->filename;
     $data['php'] = !empty($theme->info['php']) ? $theme->info['php'] : '';
     $data['project'] = !empty($theme->info['project']) ? $theme->info['project'] : '';
     $data['project_status_url'] = !empty($theme->info['project_status_url']) ? $theme->info['project_status_url'] : '';
@@ -223,7 +225,7 @@ function views_system_get_type_list() {
  */
 function views_system_get_base_theme_list() {
 
-  return db_query("SELECT s.name, vs.label FROM {views_system} vs LEFT JOIN {system} s ON s.filename = vs.filename WHERE s.name IN (SELECT DISTINCT(base_theme) FROM {views_system} WHERE base_theme <> '') ORDER BY vs.label")
+  return db_query("SELECT s.name, vs.label FROM {views_system} vs LEFT JOIN {system} s ON s.filename = vs.pathname WHERE s.name IN (SELECT DISTINCT(base_theme) FROM {views_system} WHERE base_theme <> '') ORDER BY vs.label")
     ->fetchAllKeyed();
 }
 

@@ -24,7 +24,7 @@ class views_handler_field_views_system_dependencies extends views_handler_field_
         foreach (unserialize($field) as $module) {
 
           $dependency = backdrop_parse_dependency($module);
-          $label = db_query('SELECT vs.label FROM {views_system} vs INNER JOIN {system} s ON vs.filename = s.filename WHERE s.name = :name', array(':name' => $dependency['name']))
+          $label = db_query('SELECT vs.label FROM {views_system} vs INNER JOIN {system} s ON vs.pathname = s.filename WHERE s.name = :name', array(':name' => $dependency['name']))
             ->fetchField();
 
           $this->items[$field][$module]['label'] = $label;

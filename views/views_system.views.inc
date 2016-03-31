@@ -15,7 +15,7 @@ function views_system_views_data() {
   $data['views_system']['table']['join'] = array(
     'system' => array(
       'left_field' => 'filename',
-      'field' => 'filename',
+      'field' => 'pathname',
     ),
   );
 
@@ -197,6 +197,25 @@ function views_system_views_data() {
     ),
   );
 
+  $data['views_system']['filename'] = array(
+    'title' => t('Filename'),
+    'help' => t('The filename of the primary file for this item; e.g. node.module.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'pathname',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+  );
+
   $data['views_system']['label'] = array(
     'title' => t('Label'),
     'help' => t('The human readable name of this item.'),
@@ -269,6 +288,25 @@ function views_system_views_data() {
     'argument' => array(
       'handler' => 'views_handler_argument_string',
       'name field' => 'package',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+  );
+
+  $data['views_system']['pathname'] = array(
+    'title' => t('Pathname'),
+    'help' => t('The path of the primary file for this item, relative to the Backdrop root; e.g. modules/node/node.module.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'pathname',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',
@@ -512,7 +550,7 @@ function views_system_views_data() {
  */
 function views_system_views_data_alter(&$data) {
 
-  $data['system']['filename']['title'] = t('Filename');
+  $data['system']['filename'] = NULL;
 
   $data['system']['bootstrap'] = array(
     'title' => t('Bootstrap'),
