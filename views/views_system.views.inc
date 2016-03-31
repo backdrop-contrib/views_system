@@ -147,6 +147,16 @@ function views_system_views_data() {
       'no group by' => TRUE,
       'click sortable' => FALSE,
     ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'dependencies',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   $data['views_system']['description'] = array(
@@ -195,6 +205,16 @@ function views_system_views_data() {
       'no group by' => TRUE,
       'click sortable' => FALSE,
     ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'features',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   $data['views_system']['filename'] = array(
@@ -209,7 +229,7 @@ function views_system_views_data() {
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_string',
-      'name field' => 'pathname',
+      'name field' => 'filename',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',
@@ -378,6 +398,16 @@ function views_system_views_data() {
       'no group by' => TRUE,
       'click sortable' => FALSE,
     ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'regions',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   $data['views_system']['regions_hidden'] = array(
@@ -387,6 +417,16 @@ function views_system_views_data() {
       'handler' => 'views_handler_field_views_system_regions_hidden',
       'no group by' => TRUE,
       'click sortable' => FALSE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'regions_hidden',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
     ),
   );
 
@@ -419,6 +459,16 @@ function views_system_views_data() {
       'no group by' => TRUE,
       'click sortable' => FALSE,
     ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'required_by',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   $data['views_system']['requires'] = array(
@@ -428,6 +478,16 @@ function views_system_views_data() {
       'handler' => 'views_handler_field_views_system_requires',
       'no group by' => TRUE,
       'click sortable' => FALSE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'requires',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
     ),
   );
 
@@ -458,6 +518,16 @@ function views_system_views_data() {
       'no group by' => TRUE,
       'click sortable' => FALSE,
     ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'scripts',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   $data['views_system']['settings'] = array(
@@ -468,6 +538,16 @@ function views_system_views_data() {
       'no group by' => TRUE,
       'click sortable' => FALSE,
     ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'settings',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   $data['views_system']['stylesheets'] = array(
@@ -477,6 +557,16 @@ function views_system_views_data() {
       'handler' => 'views_handler_field_views_system_stylesheets',
       'no group by' => TRUE,
       'click sortable' => FALSE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'stylesheets',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
     ),
   );
 
