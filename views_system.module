@@ -211,12 +211,17 @@ function views_system_get_origin_list() {
  */
 function views_system_get_type_list() {
 
-  return array(
+  $list = array(
     'module' => t('Module'),
     'profile' => t('Profile'),
     'theme' => t('Theme'),
     'theme_engine' => t('Theme engine'),
   );
+
+  $types = db_query('SELECT DISTINCT(type) FROM {views_system} ORDER BY type')
+    ->fetchAllKeyed(0, 0);
+
+  return array_intersect_key($list, $types);
 }
 
 
@@ -231,9 +236,9 @@ function views_system_get_base_theme_list() {
 
 
 /**
- *
+ * Helper function to convert a nested array into a flat array.
  */
-function views_system_convert_nested_array_into_flat_array($nested, $delimiter = '.', $path = null) {
+function views_system_convert_nested_array_into_flat_array($nested, $path = NULL, $delimiter = '.') {
   $flat = array();
 
   if (!is_null($path)) {
@@ -242,11 +247,13 @@ function views_system_convert_nested_array_into_flat_array($nested, $delimiter =
 
   if (is_array($nested)) {
     foreach ($nested as $key => &$value) {
+      $path .= $key;
+
       if (is_array($value)) {
-        $flat = array_merge($flat, views_system_convert_nested_array_into_flat_array($value, $delimiter, $path . $key));
+        $flat = array_merge($flat, views_system_convert_nested_array_into_flat_array($value, $path, $delimiter));
       }
       else {
-        $flat[$path . $key] = $value;
+        $flat[$path] = $value;
       }
     }
   }
