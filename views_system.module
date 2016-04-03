@@ -60,7 +60,7 @@ function views_system_modules_enabled() {
 
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter(); update data on modules page.
  */
 function views_system_form_system_modules_alter(&$form, &$form_state, $form_id) {
 
@@ -69,7 +69,7 @@ function views_system_form_system_modules_alter(&$form, &$form_state, $form_id) 
 
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter(); update data on themes page.
  */
 function views_system_form_system_themes_admin_form_alter(&$form, &$form_state, $form_id) {
 
@@ -104,6 +104,7 @@ function views_system_rebuild_module_data() {
     $data['filename'] = basename($module->filename);
     $data['label'] = $module->info['name'];
     $data['mtime'] = (int) $module->info['mtime'];
+    $data['operations'] = ($module->status && !empty($module->info['configure'])) ? $module->info['configure'] : '';
     $data['origin'] = $core ? 'core' : 'extension';
     $data['package'] = !empty($module->info['package']) ? $module->info['package'] : '';
     $data['pathname'] = $module->filename;
@@ -169,6 +170,7 @@ function views_system_rebuild_theme_data() {
     $data['filename'] = basename($theme->filename);
     $data['label'] = $theme->info['name'];
     $data['mtime'] = (int) $theme->info['mtime'];
+    $data['operations'] = ($theme->status && theme_has_settings($theme->name)) ? 'admin/appearance/settings/' . $theme->name : '';
     $data['origin'] = $core ? 'core' : 'extension';
     $data['pathname'] = $theme->filename;
     $data['php'] = !empty($theme->info['php']) ? $theme->info['php'] : '';
@@ -247,13 +249,11 @@ function views_system_convert_nested_array_into_flat_array($nested, $path = NULL
 
   if (is_array($nested)) {
     foreach ($nested as $key => &$value) {
-      $path .= $key;
-
       if (is_array($value)) {
-        $flat = array_merge($flat, views_system_convert_nested_array_into_flat_array($value, $path, $delimiter));
+        $flat = array_merge($flat, views_system_convert_nested_array_into_flat_array($value, $path . $key, $delimiter));
       }
       else {
-        $flat[$path] = $value;
+        $flat[$path . $key] = $value;
       }
     }
   }

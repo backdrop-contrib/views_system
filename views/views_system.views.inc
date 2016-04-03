@@ -274,6 +274,25 @@ function views_system_views_data() {
     ),
   );
 
+  $data['views_system']['operations'] = array(
+    'title' => t('Operations'),
+    'help' => t('Operation links for this item.'),
+    'field' => array(
+      'handler' => 'views_handler_field_url',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+      'name field' => 'operations',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+  );
+
   $data['views_system']['origin'] = array(
     'title' => t('Origin'),
     'help' => t('The origin of this item, either core or extension.'),

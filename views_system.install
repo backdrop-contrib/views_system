@@ -95,6 +95,13 @@ function views_system_schema() {
         'not null' => FALSE,
         'default' => NULL,
       ),
+      'operations' => array(
+        'description' => 'Operation links for this item.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
       'origin' => array(
         'description' => 'The origin of this item, either core or extension.',
         'type' => 'varchar',
@@ -227,26 +234,35 @@ function views_system_enable() {
 
 
 /**
- * Install database table 'views_system' and add data.
+ * Helper function to rebuild database table 'views_system'.
  */
-function views_system_update_1100() {
+function views_system_rebuild_schema() {
 
-  $modules = array('views_system');
+  if (db_table_exists('views_system')) {
+    db_drop_table('views_system');
+  }
 
-  module_disable($modules, FALSE);
-  backdrop_uninstall_modules($modules, FALSE);
-  module_enable($modules, FALSE);
+  $schema = views_system_schema();
+  db_create_table('views_system', $schema['views_system']);
+
+  views_system_rebuild_module_data();
+  views_system_rebuild_theme_data();
 }
 
 
 /**
- * Add column 'pathname' to database table 'views_system' and update data.
+ * Install database table 'views_system'.
+ */
+function views_system_update_1100() {
+
+  views_system_rebuild_schema();
+}
+
+
+/**
+ * Update to new database schema of table 'views_system'.
  */
 function views_system_update_1101() {
 
-  $modules = array('views_system');
-
-  module_disable($modules, FALSE);
-  backdrop_uninstall_modules($modules, FALSE);
-  module_enable($modules, FALSE);
+  views_system_rebuild_schema();
 }
