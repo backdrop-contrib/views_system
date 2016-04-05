@@ -230,6 +230,17 @@ function views_system_get_base_theme_list() {
 
 
 /**
+ * Helper function to retrieve list of engines.
+ */
+function views_system_get_engine_list() {
+
+  return array(
+    'phptemplate' => t('PHPTemplate'),
+  );
+}
+
+
+/**
  * Helper function to retrieve list of origins.
  */
 function views_system_get_origin_list() {
