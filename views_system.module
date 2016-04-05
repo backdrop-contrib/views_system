@@ -103,6 +103,7 @@ function views_system_rebuild_module_data() {
   foreach($modules as $module) {
 
     $core = preg_match('/^(core\/modules\/|profiles\/minimal\/minimal|profiles\/standard\/standard|profiles\/testing\/testing)/i', $module->filename);
+    $contributed = !$core && isset($module->info['project']);
 
     $data = array();
     $data['configure'] = !empty($module->info['configure']) ? $module->info['configure'] : '';
@@ -127,7 +128,7 @@ function views_system_rebuild_module_data() {
     $data['label'] = $module->info['name'];
     $data['mtime'] = (int) $module->info['mtime'];
     $data['operations'] = ($module->status && !empty($module->info['configure'])) ? $module->info['configure'] : '';
-    $data['origin'] = $core ? 'core' : 'extension';
+    $data['origin'] = $core ? 'core' : ($contributed ? 'contributed' : 'custom');
     $data['package'] = !empty($module->info['package']) ? $module->info['package'] : '';
     $data['pathname'] = $module->filename;
     $data['php'] = !empty($module->info['php']) ? $module->info['php'] : '';
@@ -176,6 +177,7 @@ function views_system_rebuild_theme_data() {
   foreach ($themes as $theme) {
 
     $core = preg_match('/^core\/themes\//i', $theme->filename);
+    $contributed = !$core && isset($theme->info['project']);
 
     $data = array();
     $data['admin_theme'] = (int) ($theme->name == $admin_theme || (($theme->name == $default_theme) && $admin_theme == '0'));
@@ -190,7 +192,7 @@ function views_system_rebuild_theme_data() {
     $data['label'] = $theme->info['name'];
     $data['mtime'] = (int) $theme->info['mtime'];
     $data['operations'] = ($theme->status && theme_has_settings($theme->name)) ? 'admin/appearance/settings/' . $theme->name : '';
-    $data['origin'] = $core ? 'core' : 'extension';
+    $data['origin'] = $core ? 'core' : ($contributed ? 'contributed' : 'custom');
     $data['pathname'] = $theme->filename;
     $data['php'] = !empty($theme->info['php']) ? $theme->info['php'] : '';
     $data['project'] = !empty($theme->info['project']) ? $theme->info['project'] : '';
@@ -257,7 +259,8 @@ function views_system_get_origin_list() {
 
   return array(
     'core' => t('Core'),
-    'extension' => t('Extension'),
+    'contributed' => t('Contributed'),
+    'custom' => t('Custom'),
   );
 }
 

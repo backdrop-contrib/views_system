@@ -103,7 +103,7 @@ function views_system_schema() {
         'default' => '',
       ),
       'origin' => array(
-        'description' => 'The origin of this item, either core or extension.',
+        'description' => 'The origin of this item, either core, contributed, or custom.',
         'type' => 'varchar',
         'length' => 12,
         'not null' => TRUE,
@@ -260,7 +260,7 @@ function views_system_update_1100() {
 
 
 /**
- * Add column 'pathname' and 'operations' to database table 'views_system'.
+ * Add columns 'pathname' and 'operations' to database table 'views_system'.
  */
 function views_system_update_1101() {
 

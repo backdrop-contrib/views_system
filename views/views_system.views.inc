@@ -297,7 +297,7 @@ function views_system_views_data() {
 
   $data['views_system']['origin'] = array(
     'title' => t('Origin'),
-    'help' => t('The origin of this item, either core or extension.'),
+    'help' => t('The origin of this item, either core, contributed, or custom.'),
     'field' => array(
       'handler' => 'views_handler_field_machine_name',
       'options callback' => 'views_system_get_origin_list',
