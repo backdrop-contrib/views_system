@@ -21,15 +21,11 @@ class views_handler_field_views_system_dependencies extends views_handler_field_
       $field = $this->get_value($result, NULL, TRUE);
       if (!empty($field) && !isset($this->items[$field])) {
 
-        foreach (unserialize($field) as $module) {
+        foreach (unserialize($field) as $name => $module) {
 
-          $dependency = backdrop_parse_dependency($module);
-          $label = db_query('SELECT vs.label FROM {views_system} vs INNER JOIN {system} s ON vs.pathname = s.filename WHERE s.name = :name', array(':name' => $dependency['name']))
-            ->fetchField();
-
-          $this->items[$field][$module]['label'] = $label;
-          $this->items[$field][$module]['name'] = $dependency['name'];
-          $this->items[$field][$module]['version'] = isset($dependency['original_version']) ? trim($dependency['original_version']) : '';
+          $this->items[$field][$name]['label'] = $module['label'];
+          $this->items[$field][$name]['name'] = $module['name'];
+          $this->items[$field][$name]['version'] = $module['version'];
         }
       }
     }

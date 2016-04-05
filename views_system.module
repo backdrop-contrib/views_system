@@ -86,20 +86,32 @@ function views_system_rebuild_module_data() {
 
   $profile = backdrop_get_profile();
 
+  $query = db_insert('views_system')
+    ->fields(array('configure', 'core', 'datestamp', 'dependencies', 'description', 'filename', 'label', 'mtime', 'operations', 'origin', 'package', 'pathname', 'php', 'project', 'project_status_url', 'required', 'required_by', 'requires', 'scripts', 'stylesheets', 'type', 'version', 'visible'));
+
   $modules = system_rebuild_module_data();
   foreach($modules as $module) {
 
     $core = preg_match('/^(core\/modules\/|profiles\/minimal\/minimal|profiles\/standard\/standard|profiles\/testing\/testing)/i', $module->filename);
 
-    if ($module->name == $profile) {
-      $module->type = 'profile';
-    }
-
     $data = array();
     $data['configure'] = !empty($module->info['configure']) ? $module->info['configure'] : '';
     $data['core'] = !empty($module->info['backdrop']) ? $module->info['backdrop'] : '';
     $data['datestamp'] = !empty($module->info['timestamp']) ? (int) $module->info['timestamp'] : NULL;
-    $data['dependencies'] = !empty($module->info['dependencies']) ? serialize($module->info['dependencies']) : '';
+
+    $dependencies = array();
+    if (isset($module->info['dependencies'])) {
+      foreach ($module->info['dependencies'] as $name) {
+        $dependency = backdrop_parse_dependency($name);
+        $dependencies[$name] = array(
+          'name' => $dependency['name'],
+          'label' => isset($modules[$dependency['name']]->info['name']) ? $modules[$dependency['name']]->info['name'] : $dependency['name'],
+          'version' => isset($dependency['original_version']) ? trim($dependency['original_version']) : '',
+        );
+      }
+    }
+    $data['dependencies'] = !empty($dependencies) ? serialize($dependencies) : '';
+
     $data['description'] = !empty($module->info['description']) ? $module->info['description'] : '';
     $data['filename'] = basename($module->filename);
     $data['label'] = $module->info['name'];
@@ -112,18 +124,28 @@ function views_system_rebuild_module_data() {
     $data['project'] = !empty($module->info['project']) ? $module->info['project'] : '';
     $data['project_status_url'] = !empty($module->info['project_status_url']) ? $module->info['project_status_url'] : '';
     $data['required'] = !empty($module->info['required']) ? (int) $module->info['required'] : 0;
-    $data['required_by'] = !empty($module->required_by) ? serialize($module->required_by) : '';
-    $data['requires'] = !empty($module->requires) ? serialize($module->requires) : '';
+
+    $required_by = array();
+    foreach ($module->required_by as $name => $value) {
+      $required_by[$name] = isset($modules[$name]->info['name']) ? $modules[$name]->info['name'] : $name;
+    }
+    $data['required_by'] = !empty($required_by) ? serialize($required_by) : '';
+
+    $requires = array();
+    foreach ($module->requires as $name => $value) {
+      $requires[$name] = isset($modules[$name]->info['name']) ? $modules[$name]->info['name'] : $name;
+    }
+    $data['requires'] = !empty($requires) ? serialize($requires) : '';
+
     $data['scripts'] = !empty($module->info['scripts']) ? serialize($module->info['scripts']) : '';
     $data['stylesheets'] = !empty($module->info['stylesheets']) ? serialize($module->info['stylesheets']) : '';
-    $data['type'] = $module->type;
+    $data['type'] = ($module->name != $profile) ? $module->type : 'profile';
     $data['version'] = !empty($module->info['version']) ? $module->info['version'] : '';
     $data['visible'] = !empty($module->info['hidden']) ? (int) !$module->info['hidden'] : 1;
 
-    db_insert('views_system')
-      ->fields($data)
-      ->execute();
+    $query->values($data);
   }
+  $query->execute();
 }
 
 
@@ -137,33 +159,20 @@ function views_system_rebuild_theme_data() {
   $default_theme = config_get('system.core', 'theme_default');
   $admin_theme = config_get('system.core', 'admin_theme');
 
+  $query = db_insert('views_system')
+    ->fields(array('admin_theme', 'base_theme', 'core', 'datestamp', 'default_theme', 'description', 'engine', 'features', 'filename', 'label', 'mtime', 'operations', 'origin', 'pathname', 'php', 'project', 'project_status_url', 'regions', 'regions_hidden', 'required', 'required_by', 'requires', 'screenshot', 'scripts', 'settings', 'stylesheets', 'type', 'version', 'visible'));
+
   $themes = system_rebuild_theme_data();
-  foreach ($themes as $theme_name => $theme) {
+  foreach ($themes as $theme) {
 
     $core = preg_match('/^core\/themes\//i', $theme->filename);
 
-    $theme->is_default = ($theme_name == $default_theme);
-    $theme->is_admin = ($theme_name == $admin_theme || ($theme->is_default && $admin_theme == '0'));
-
-    $theme->requires = array();
-    if (isset($theme->base_themes)) {
-      foreach ($theme->base_themes as $base_theme => $base_theme_label) {
-        $theme->requires[$base_theme] = array('name' => $base_theme);
-      }
-    }
-    $theme->required_by = array();
-    if (isset($theme->sub_themes)) {
-      foreach ($theme->sub_themes as $sub_theme => $sub_theme_label) {
-        $theme->required_by[$sub_theme] = array('name' => $theme_name);
-      }
-    }
-
     $data = array();
-    $data['admin_theme'] = (int) $theme->is_admin;
+    $data['admin_theme'] = (int) ($theme->name == $admin_theme || (($theme->name == $default_theme) && $admin_theme == '0'));
     $data['base_theme'] = !empty($theme->info['base theme']) ? $theme->info['base theme'] : '';
     $data['core'] = !empty($theme->info['backdrop']) ? $theme->info['backdrop'] : '';
     $data['datestamp'] = !empty($theme->info['timestamp']) ? (int) $theme->info['timestamp'] : NULL;
-    $data['default_theme'] = (int) $theme->is_default;
+    $data['default_theme'] = (int) ($theme->name == $default_theme);
     $data['description'] = !empty($theme->info['description']) ? $theme->info['description'] : '';
     $data['engine'] = !empty($theme->info['engine']) ? $theme->info['engine'] : '';
     $data['features'] = !empty($theme->info['features']) ? serialize($theme->info['features']) : '';
@@ -179,8 +188,23 @@ function views_system_rebuild_theme_data() {
     $data['regions'] = !empty($theme->info['regions']) ? serialize($theme->info['regions']) : '';
     $data['regions_hidden'] = !empty($theme->info['regions_hidden']) ? serialize($theme->info['regions_hidden']) : '';
     $data['required'] = !empty($theme->info['required']) ? (int) $theme->info['required'] : 0;
-    $data['required_by'] = !empty($theme->required_by) ? serialize($theme->required_by) : '';
-    $data['requires'] = !empty($theme->requires) ? serialize($theme->requires) : '';
+
+    $required_by = array();
+    if (isset($theme->sub_themes)) {
+      foreach ($theme->sub_themes as $name => $value) {
+        $required_by[$name] = isset($themes[$name]->info['name']) ? $themes[$name]->info['name'] : $name;
+      }
+    }
+    $data['required_by'] = !empty($required_by) ? serialize($required_by) : '';
+
+    $requires = array();
+    if (isset($theme->base_themes)) {
+      foreach ($theme->base_themes as $name => $value) {
+        $requires[$name] = isset($themes[$name]->info['name']) ? $themes[$name]->info['name'] : $name;
+      }
+    }
+    $data['requires'] = !empty($requires) ? serialize($requires) : '';
+
     $data['screenshot'] = !empty($theme->info['screenshot']) && file_exists($theme->info['screenshot']) ? $theme->info['screenshot'] : '';
     $data['scripts'] = !empty($theme->info['scripts']) ? serialize($theme->info['scripts']) : '';
     $data['settings'] = !empty($theme->info['settings']) ? serialize($theme->info['settings']) : '';
@@ -189,10 +213,19 @@ function views_system_rebuild_theme_data() {
     $data['version'] = !empty($theme->info['version']) ? $theme->info['version'] : '';
     $data['visible'] = !empty($theme->info['hidden']) ? (int) !$theme->info['hidden'] : 1;
 
-    db_insert('views_system')
-      ->fields($data)
-      ->execute();
+    $query->values($data);
   }
+  $query->execute();
+}
+
+
+/**
+ * Helper function to retrieve list of base themes.
+ */
+function views_system_get_base_theme_list() {
+
+  return db_query("SELECT s.name, vs.label FROM {views_system} vs LEFT JOIN {system} s ON s.filename = vs.pathname WHERE s.name IN (SELECT DISTINCT(base_theme) FROM {views_system} WHERE base_theme <> '') ORDER BY vs.label")
+    ->fetchAllKeyed();
 }
 
 
@@ -224,16 +257,6 @@ function views_system_get_type_list() {
     ->fetchAllKeyed(0, 0);
 
   return array_intersect_key($list, $types);
-}
-
-
-/**
- * Helper function to retrieve list of base themes.
- */
-function views_system_get_base_theme_list() {
-
-  return db_query("SELECT s.name, vs.label FROM {views_system} vs LEFT JOIN {system} s ON s.filename = vs.pathname WHERE s.name IN (SELECT DISTINCT(base_theme) FROM {views_system} WHERE base_theme <> '') ORDER BY vs.label")
-    ->fetchAllKeyed();
 }
 
 

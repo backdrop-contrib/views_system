@@ -21,11 +21,7 @@ class views_handler_field_views_system_requires extends views_handler_field_prer
       $field = $this->get_value($result, NULL, TRUE);
       if (!empty($field) && !isset($this->items[$field])) {
 
-        foreach (unserialize($field) as $item) {
-
-          $name = $item['name'];
-          $label = db_query('SELECT vs.label FROM {views_system} vs INNER JOIN {system} s ON vs.pathname = s.filename WHERE s.name = :name', array(':name' => $name))
-            ->fetchField();
+        foreach (unserialize($field) as $name => $label) {
 
           $this->items[$field][$name]['label'] = $label;
           $this->items[$field][$name]['name'] = $name;
