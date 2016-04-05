@@ -260,7 +260,7 @@ function views_system_update_1100() {
 
 
 /**
- * Update to new database schema of table 'views_system'.
+ * Add column 'pathname' and 'operations' to database table 'views_system'.
  */
 function views_system_update_1101() {
 
